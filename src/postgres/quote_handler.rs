@@ -437,6 +437,23 @@ impl QuoteHandler for PostgresDB {
         Ok(quotes)
     }
 
+    async fn get_latest_quote_date_for_ticker(
+        &self,
+        ticker_id: i32,
+    ) -> Result<Option<OffsetDateTime>, DataError> {
+        let row = sqlx::query!(
+            "SELECT time FROM quotes WHERE ticker_id=$1 ORDER BY time DESC LIMIT 1",
+            ticker_id
+        )
+        .fetch_optional(&self.pool)
+        .await?;
+
+        match row {
+            Some(row) => Ok(Some(row.time)),
+            None => Ok(None),
+        }
+    }
+
     async fn update_quote(&self, quote: &Quote) -> Result<(), DataError> {
         if quote.id.is_none() {
             return Err(DataError::NotFound(
@@ -462,6 +479,23 @@ impl QuoteHandler for PostgresDB {
         sqlx::query!("DELETE FROM quotes WHERE id=$1;", (id as i32))
             .execute(&self.pool)
             .await?;
+        Ok(())
+    }
+
+    async fn delete_quotes_for_ticker_id_in_range(
+        &self,
+        ticker_id: i32,
+        start: OffsetDateTime,
+        end: OffsetDateTime,
+    ) -> Result<(), DataError> {
+        sqlx::query!(
+            "DELETE FROM quotes WHERE ticker_id=$1 AND time > $2 AND time <= $3;",
+            ticker_id,
+            start,
+            end
+        )
+        .execute(&self.pool)
+        .await?;
         Ok(())
     }
 

@@ -51,8 +51,28 @@ pub trait QuoteHandler: AssetHandler {
         end: OffsetDateTime,
     ) -> Result<Vec<(Quote, i32)>, DataError>;
 
+    /// Get date of latest quote for a specific ticker id
+    async fn get_latest_quote_date_for_ticker(
+        &self,
+        ticker_id: i32,
+    ) -> Result<Option<OffsetDateTime>, DataError>;
+
     async fn get_all_quotes_for_ticker(&self, ticker_id: i32) -> Result<Vec<Quote>, DataError>;
+
+    /// Update a quote in the database
     async fn update_quote(&self, quote: &Quote) -> Result<(), DataError>;
+
+    /// Delete a quote from the database
     async fn delete_quote(&self, id: i32) -> Result<(), DataError>;
+
+    /// Delete quotes for a specific ticker id within a time range (after start, before or equal to end)
+    async fn delete_quotes_for_ticker_id_in_range(
+        &self,
+        ticker_id: i32,
+        start: OffsetDateTime,
+        end: OffsetDateTime,
+    ) -> Result<(), DataError>;
+
+    /// Remove duplicate quotes from the database
     async fn remove_duplicates(&self) -> Result<(), DataError>;
 }
