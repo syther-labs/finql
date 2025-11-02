@@ -36,9 +36,7 @@ async fn main() {
         },
     ];
 
-    db.store_object("test", "calendar", &holidays)
-        .await
-        .unwrap();
+    db.store_object("test", &holidays).await.unwrap();
 
     let new_holiday: Vec<Holiday> = db.get_object("test").await.unwrap();
     println!("New holiday struct: {:?}", new_holiday);

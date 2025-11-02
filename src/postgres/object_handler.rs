@@ -12,7 +12,6 @@ impl ObjectHandler for PostgresDB {
     async fn store_object<T: Serialize + Sync>(
         &self,
         id: &str,
-        _object_type: &str,
         object: &T,
     ) -> Result<(), DataError> {
         let object_json = serde_json::to_value(object)?;
@@ -24,6 +23,19 @@ impl ObjectHandler for PostgresDB {
         )
         .execute(&self.pool)
         .await?;
+        Ok(())
+    }
+
+    async fn update_object<T: Serialize + Sync>(
+        &self,
+        id: &str,
+        object: &T,
+    ) -> Result<(), DataError> {
+        let object_json = serde_json::to_value(object)?;
+
+        sqlx::query!("UPDATE objects SET object=$1 WHERE id=$2", object_json, id)
+            .execute(&self.pool)
+            .await?;
         Ok(())
     }
 
