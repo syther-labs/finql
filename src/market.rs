@@ -9,7 +9,7 @@ use std::collections::BTreeMap;
 use time::{self, Date, OffsetDateTime, Time};
 
 use async_trait::async_trait;
-use log::debug;
+use log::{debug, error};
 use thiserror::Error;
 
 use crate::datatypes::{
@@ -277,6 +277,7 @@ impl Market {
             None
         };
         if let Some(provider) = provider {
+            debug!("Updating quote history for ticker {ticker_id} from {start} to {end}");
             market_quotes::update_ticker_history(
                 provider,
                 &ticker,
@@ -285,6 +286,8 @@ impl Market {
                 end,
             )
             .await?;
+        } else {
+            error!("No provider found for ticker {ticker_id}");
         }
         Ok(())
     }
