@@ -106,7 +106,7 @@ impl Market {
         Self {
             inner: Arc::new(MarketImpl {
                 // Set of default calendars
-                calendars: generate_calendars(),
+                calendars: generate_calendars(1990, 2050),
                 providers: RwLock::new(BTreeMap::new()),
                 prices: RwLock::new(BTreeMap::new()),
                 db: db.clone(),
@@ -128,7 +128,7 @@ impl Market {
         Ok(Self {
             inner: Arc::new(MarketImpl {
                 // Set of default calendars
-                calendars: generate_calendars(),
+                calendars: generate_calendars(start.year(), end.year()),
                 providers: RwLock::new(BTreeMap::new()),
                 prices: RwLock::new(BTreeMap::new()),
                 db: db.clone(),
@@ -428,15 +428,15 @@ impl CurrencyConverter for Market {
 }
 
 /// Generate fixed set of some calendars for testing purposes only
-pub fn generate_calendars() -> BTreeMap<String, Calendar> {
+pub fn generate_calendars(start_year: i32, end_year: i32) -> BTreeMap<String, Calendar> {
     use cal_calc::{target_holidays, uk_settlement_holidays};
 
     let mut calendars = BTreeMap::new();
 
-    let uk_cal = Calendar::calc_calendar(&uk_settlement_holidays(), 1990, 2050).unwrap();
+    let uk_cal = Calendar::calc_calendar(&uk_settlement_holidays(), start_year, end_year).unwrap();
     calendars.insert("uk".to_string(), uk_cal);
 
-    let target_cal = Calendar::calc_calendar(&target_holidays(), 1990, 2050).unwrap();
+    let target_cal = Calendar::calc_calendar(&target_holidays(), start_year, end_year).unwrap();
     calendars.insert("TARGET".to_string(), target_cal);
 
     calendars

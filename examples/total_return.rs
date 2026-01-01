@@ -1,5 +1,4 @@
 ///! Demonstrate total return calculation by single investment in dividend stock
-///! Example storing general calendars as JSON object in PostgreSQL
 ///! Please note: All existing content of the database will be deleted!
 use std::cmp::min;
 use std::error::Error;
