@@ -282,7 +282,7 @@ mod tests {
             "denomination": 1000
         }"#;
         let bond: Bond = serde_json::from_str(&data).unwrap();
-        let sample_calendars = generate_calendars();
+        let sample_calendars = generate_calendars(2020, 2025);
         let calendar = SimpleCalendar::new(&sample_calendars["TARGET"]);
         let cash_flows = bond.rollout_cash_flows(1., &calendar).unwrap();
         assert_eq!(cash_flows.len(), 5);
