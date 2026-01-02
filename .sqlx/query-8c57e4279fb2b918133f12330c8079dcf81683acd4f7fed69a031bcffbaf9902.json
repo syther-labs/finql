@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT\n                id as \"id!\",\n                iso_code\n            FROM \n                currencies",
+  "query": "SELECT\n                id as \"id!\",\n                iso_code\n            FROM\n                currencies",
   "describe": {
     "columns": [
       {
@@ -22,5 +22,5 @@
       false
     ]
   },
-  "hash": "0e5a52757b8a3c61ae2d747cca299804ece31c21ee016aebb602825cb30949d5"
+  "hash": "8c57e4279fb2b918133f12330c8079dcf81683acd4f7fed69a031bcffbaf9902"
 }

@@ -72,8 +72,13 @@ impl AssetHandler for PostgresDB {
                         .fetch_one(&self.pool)
                         .await
                         .ok()
+                } else if let Some(isin) = &s.isin {
+                    sqlx::query_as!(ID, "SELECT id FROM stocks WHERE isin = $1", isin)
+                        .fetch_one(&self.pool)
+                        .await
+                        .ok()
                 } else {
-                    sqlx::query_as!(ID, "SELECT id FROM stocks WHERE isin = $1", s.isin)
+                    sqlx::query_as!(ID, "SELECT id FROM stocks WHERE name = $1", s.name)
                         .fetch_one(&self.pool)
                         .await
                         .ok()
@@ -88,7 +93,7 @@ impl AssetHandler for PostgresDB {
         let row = sqlx::query!(
             r#"SELECT
                 asset_class
-             FROM assets 
+             FROM assets
              WHERE id = $1"#,
             id,
         )
@@ -102,7 +107,7 @@ impl AssetHandler for PostgresDB {
                          id,
                          iso_code,
                          rounding_digits
-                     FROM currencies 
+                     FROM currencies
                      WHERE id = $1"#,
                     id,
                 )
@@ -188,11 +193,11 @@ impl AssetHandler for PostgresDB {
             r#"SELECT
                 a.id as "id!",
                 a.asset_class as "asset_class!",
-                CASE 
-                    WHEN a.asset_class='currency' THEN c.iso_code 
+                CASE
+                    WHEN a.asset_class='currency' THEN c.iso_code
                     ELSE s.name
                 END as "name!"
-            FROM 
+            FROM
                 assets a
                 LEFT JOIN stocks s ON a.id = s.id
                 LEFT JOIN currencies c ON a.id = c.id"#
@@ -214,8 +219,8 @@ impl AssetHandler for PostgresDB {
             Asset::Currency(c) => {
                 if let Some(id) = c.id {
                     sqlx::query!(
-                        "UPDATE currencies 
-                        SET 
+                        "UPDATE currencies
+                        SET
                             iso_code=$2,
                             rounding_digits=$3
                         WHERE id=$1;",
@@ -235,8 +240,8 @@ impl AssetHandler for PostgresDB {
             Asset::Stock(s) => {
                 if let Some(id) = s.id {
                     sqlx::query!(
-                        "UPDATE stocks 
-                        SET 
+                        "UPDATE stocks
+                        SET
                             name=$2,
                             isin=$3,
                             wkn=$4,
@@ -320,7 +325,7 @@ impl AssetHandler for PostgresDB {
             r#"SELECT
                 id as "id!",
                 iso_code
-            FROM 
+            FROM
                 currencies"#
         )
         .fetch_all(&self.pool)
