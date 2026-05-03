@@ -183,6 +183,7 @@ impl Strategy for ReInvestInSingleStock {
         position: &PortfolioPosition,
         date: Date,
     ) -> Result<Vec<Transaction>, StrategyError> {
+        debug!("apply strategy on {date}");
         let mut transactions = Vec::new();
         if let Some(idx) = cash_flow_idx(date, &self.dividends) {
             let mut dividend = self.dividends[idx];
